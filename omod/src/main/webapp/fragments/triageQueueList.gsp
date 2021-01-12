@@ -64,6 +64,11 @@
         });
     }
 
+
+    function pickPatient(url,patient,queueId) {
+
+    }
+
     function displayTriageData(response) {
         jq("#triage-queue-list-table").html("");
         var stillInQueueDataRows = "";
