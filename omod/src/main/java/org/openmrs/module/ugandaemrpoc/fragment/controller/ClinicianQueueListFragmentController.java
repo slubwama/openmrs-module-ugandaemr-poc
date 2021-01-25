@@ -31,7 +31,7 @@ public class ClinicianQueueListFragmentController {
         //Constructor
     }
 
-    public void controller(@SpringBean FragmentModel pageModel, @SpringBean("locationService") LocationService locationService) {
+    public void controller(@SpringBean FragmentModel pageModel, @SpringBean("locationService") LocationService locationService,UiSessionContext uiSessionContext) {
         List<String> list = new ArrayList();
 
         String locationUUIDS = Context.getAdministrationService()
@@ -43,7 +43,8 @@ public class ClinicianQueueListFragmentController {
 
         pageModel.put("locationList", (locationService.getRootLocations(false).get(0)).getChildLocations());
         pageModel.put("clinicianLocation", clinicianLocationUUIDList);
-        pageModel.put("currentProvider", Context.getAuthenticatedUser());
+        pageModel.put("currentProvider", uiSessionContext.getCurrentProvider());
+        pageModel.put("enablePatientQueueSelection", Context.getAdministrationService().getGlobalProperty("ugandaemrpoc.enablePatientQueueSelection"));
     }
 
     public SimpleObject getPatientQueueList(@RequestParam(value = "searchfilter", required = false) String searchfilter, UiSessionContext uiSessionContext) {

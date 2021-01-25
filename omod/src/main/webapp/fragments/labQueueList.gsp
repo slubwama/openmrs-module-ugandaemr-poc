@@ -2,7 +2,6 @@
 <%
         ui.includeCss("coreapps", "patientsearch/patientSearchWidget.css")
         ui.includeJavascript("patientqueueing", "patientqueue.js")
-        ui.includeJavascript("aijar", "js/aijar.js")
 %>
 <style>
 .div-table {
@@ -142,7 +141,15 @@
                 modal.find("#refer_test input[type=checkbox]").prop('checked', false);
             });
 
+
+            jq('#pick_patient_queue_dialog').on('show.bs.modal', function (event) {
+                var button = jq(event.relatedTarget)
+                jq("#patientQueueId").val(button.data('patientqueueid'));
+                jq("#goToURL").val(button.data('url'));
+            })
         });
+
+
     }
 
     jq("form").submit(function (event) {
@@ -220,8 +227,12 @@
                     content += "<td>" + patientQueueListElement.age + "</td>";
                     content += "<td>" + patientQueueListElement.providerNames + " - " + patientQueueListElement.locationFrom + "</td>";
                     content += "<td>" + waitingTime + "</td>";
-                    content += "<td><a class=\"icon-list-alt\" data-toggle=\"collapse\" href=\"#collapse-tab\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapseExample\"> <span style=\"color: red;\">TestNo</span> Tests Unproccessed</a>".replace("#collapse-tab", "#collapse-tab" + patientQueueListElement.patientQueueId).replace("TestNo", noOfTests(element));
+                    content += "<td>";
+                    content+="<a class=\"icon-list-alt\" data-toggle=\"collapse\" href=\"#collapse-tab\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapseExample\"> <span style=\"color: red;\">TestNo</span> Tests Unproccessed</a>".replace("#collapse-tab", "#collapse-tab" + patientQueueListElement.patientQueueId).replace("TestNo", noOfTests(element));
                     content += "<div class=\"collapse\" id=\"collapse-tab" + patientQueueListElement.patientQueueId + "\"><div class=\"card card-body\">" + orders + "</div></div>";
+                    if ("${enablePatientQueueSelection}".trim() === "true") {
+                        content += "<a  style=\"font-size: 25px;\" class=\"icon-signin view-action\" title=\"Select Patient\" data-toggle=\"modal\" data-target=\"#pick_patient_queue_dialog\" data-id=\"\" data-patientqueueid='" + patientQueueListElement.patientQueueId + "' data-url=\"\"></a>";
+                    }
                     content += "</td>";
                     content += "</tr>";
 
@@ -374,7 +385,7 @@ ${ui.includeFragment("ugandaemrpoc", "lab/displayResultList")}
                     </div>
 
                     <div>
-                        <h2>${currentProvider?.personName?.fullName}</h2>
+                        <h2>${currentProvider?.person?.personName?.fullName}</h2>
                     </div>
 
                     <div class="vertical"></div>
@@ -458,7 +469,9 @@ ${ui.includeFragment("ugandaemrpoc", "lab/displayResultList")}
 ${ui.includeFragment ( "ugandaemrpoc", "lab/resultForm" )}
 ${ui.includeFragment ( "ugandaemrpoc" , "printResults" )}
 </div>
+${ui.includeFragment("ugandaemrpoc", "pickPatientFromQueue", [provider: currentProvider, currentLocation: currentLocation])}
 ${ui.includeFragment ( "ugandaemrpoc", "lab/scheduleTestDialogue" )}
+
 <% } %>
 
 

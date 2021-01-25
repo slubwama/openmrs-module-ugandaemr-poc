@@ -31,6 +31,12 @@ button, input {
                     getPharmacyQueue();
                 }
             });
+
+            jq('#pick_patient_queue_dialog').on('show.bs.modal', function (event) {
+                var button = jq(event.relatedTarget)
+                jq("#patientQueueId").val(button.data('patientqueueid'));
+                jq("#goToURL").val(button.data('url'));
+            })
         });
     }
 
@@ -93,7 +99,14 @@ button, input {
                     prescriptions += "<td>" + patientQueueListElement.age + "</td>";
                     prescriptions += "<td>" + patientQueueListElement.providerNames + " - " + patientQueueListElement.locationFrom + "</td>";
                     prescriptions += "<td>" + waitingTime + "</td>";
-                    prescriptions += "<td><a title=\"Dispense Medication\" onclick='showEditPrescriptionForm(" + patientQueueListElement.encounterId + "," + patientQueueListElement.patientQueueId + "," + index + ")'>Dispense Medication <i class=\"icon-list-ul small\"></i></a> <span style=\"color: red;\">" + ordersNo + "</span></td>";
+                    prescriptions += "<td>";
+                    prescriptions += "<a title=\"Dispense Medication\" onclick='showEditPrescriptionForm(" + patientQueueListElement.encounterId + "," + patientQueueListElement.patientQueueId + "," + index + ")'>Dispense Medication <i class=\"icon-list-ul small\"></i></a> <span style=\"color: red;\">" + ordersNo + "</span>";
+
+                    if ("${enablePatientQueueSelection}".trim() === "true") {
+                        prescriptions += "<i  style=\"font-size: 25px;\" class=\"icon-signin view-action\" title=\"Select Patient\" data-toggle=\"modal\" data-target=\"#pick_patient_queue_dialog\" data-id=\"\" data-patientqueueid='" + patientQueueListElement.patientQueueId + "' data-url=\"\"></i>";
+                    }
+
+                    prescriptions += "</td>";
                     prescriptions += "</tr>";
                     prescriptionCount += 1;
                 } else if (ordersNo <= 0 && patientQueueListElement.status !== "COMPLETED") {
@@ -182,7 +195,7 @@ button, input {
                     </div>
 
                     <div>
-                        <h2>${currentProvider?.personName?.fullName}</h2>
+                        <h2>${currentProvider?.person?.personName?.fullName}</h2>
                     </div>
 
                     <div class="vertical"></div>
@@ -249,6 +262,7 @@ button, input {
     </div>
 </div>
 ${ui.includeFragment("ugandaemrpoc", "pharmacy/dispensingForm",[healthCenterName:healthCenterName])}
+${ui.includeFragment("ugandaemrpoc", "pickPatientFromQueue", [provider: currentProvider, currentLocation: currentLocation])}
 <% } %>
 
 

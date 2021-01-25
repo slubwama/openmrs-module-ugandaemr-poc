@@ -106,6 +106,13 @@
 		<description>A comma separated list of location uuids for locations that clinicians operate from</description>
 	</globalProperty>
 
+
+	<globalProperty>
+		<property>ugandaemrpoc.enablePatientQueueSelection</property>
+		<defaultValue>false</defaultValue>
+		<description>when value is "true", it allows picking of patients from queue</description>
+	</globalProperty>
+
 	<aware_of_modules>
 		<aware_of_module>org.openmrs.module.legacyui</aware_of_module>
 	</aware_of_modules>

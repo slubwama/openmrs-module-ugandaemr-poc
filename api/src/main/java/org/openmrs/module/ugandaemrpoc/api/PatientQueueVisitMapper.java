@@ -6,6 +6,15 @@ import java.io.Serializable;
 
 public class PatientQueueVisitMapper extends PatientQueueMapper  implements Serializable {
     Integer visitId;
+    String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public Integer getVisitId() {
         return visitId;

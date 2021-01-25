@@ -27,7 +27,7 @@
         setInterval(function () {
             console.log("Checking IF Reloading works");
             getPatientQueue();
-        }, 1*60000);
+        }, 1 * 60000);
         jq(document).ready(function () {
 
             jq(document).on('sessionLocationChanged', function () {
@@ -63,6 +63,12 @@
                 var modal = jq(this)
                 modal.find('.modal-title').text('New message to ' + order_id)
                 modal.find('.modal-body input').val(order_id)
+            })
+
+            jq('#pick_patient_queue_dialog').on('show.bs.modal', function (event) {
+                var button = jq(event.relatedTarget)
+                jq("#patientQueueId").val(button.data('patientqueueid'));
+                jq("#goToURL").val(button.data('url'));
             })
         });
     }
@@ -110,10 +116,10 @@
         var headerFromLab = "<table><thead><tr><th>VISIT ID</th><th>NAMES</th><th>GENDER</th><th>AGE</th><th>ENTRY POINT</th><th>STATUS</th><th>WAITING TIME</th><th>ACTION</th></tr></thead><tbody>";
         var footer = "</tbody></table>";
 
-        var dataToDisplay=[];
+        var dataToDisplay = [];
 
-        if(response.patientClinicianQueueList.length>0){
-            dataToDisplay=response.patientClinicianQueueList.sort(function (a, b) {
+        if (response.patientClinicianQueueList.length > 0) {
+            dataToDisplay = response.patientClinicianQueueList.sort(function (a, b) {
                 return a.patientQueueId - b.patientQueueId;
             });
         }
@@ -122,7 +128,7 @@
                 var patientQueueListElement = element;
                 var dataRowTable = "";
                 var urlToPatientDashBoard = '${ui.pageLink("coreapps","clinicianfacing/patient",[patientId: "patientIdElement"])}'.replace("patientIdElement", element.patientId);
-                var encounterUrl = "/" + OPENMRS_CONTEXT_PATH + "/htmlformentryui/htmlform/editHtmlFormWithStandardUi.page?patientId=" + element.patientId + "&encounterId=" + element.encounterId + "&returnUrl="+"/"+OPENMRS_CONTEXT_PATH+"/patientqueueing/providerDashboard.page";
+                var encounterUrl = "/" + OPENMRS_CONTEXT_PATH + "/htmlformentryui/htmlform/editHtmlFormWithStandardUi.page?patientId=" + element.patientId + "&encounterId=" + element.encounterId + "&returnUrl=" + "/" + OPENMRS_CONTEXT_PATH + "/patientqueueing/providerDashboard.page";
 
                 var waitingTime = getWaitingTime(patientQueueListElement.dateCreated, patientQueueListElement.dateChanged);
                 dataRowTable += "<tr>";
@@ -146,10 +152,20 @@
                 dataRowTable += "<td>" + waitingTime + "</td>";
                 dataRowTable += "<td>";
 
-                dataRowTable += "<i style=\"font-size: 25px;\" class=\"icon-dashboard view-action\" title=\"Goto Patient's Dashboard\" onclick=\"location.href = '" + urlToPatientDashBoard + "'\"></i>";
+
+
+
+                if ("${enablePatientQueueSelection}".trim() === "true") {
+                    dataRowTable += "<i  style=\"font-size: 25px;\" class=\"icon-dashboard view-action\" title=\"Capture Vitals\" data-toggle=\"modal\" data-target=\"#pick_patient_queue_dialog\" data-id=\"\" data-patientqueueid='" + element.patientQueueId + "' data-url='" + urlToPatientDashBoard + "'></i>";
+                } else {
+                    dataRowTable += "<i style=\"font-size: 25px;\" class=\"icon-dashboard view-action\" title=\"Goto Patient's Dashboard\" onclick=\"location.href = '" + urlToPatientDashBoard + "'\"></i>";
+                }
+
                 if (element.status === "PENDING" && element.locationFrom !== "Lab") {
                     dataRowTable += "<i  style=\"font-size: 25px;\" class=\"icon-external-link edit-action\" title=\"Send Patient To Another Location\" data-toggle=\"modal\" data-target=\"#add_patient_to_other_queue_dialog\" data-id=\"\" data-patient-id=\"%s\"></i>".replace("%s", element.patientId);
-                } else if ((element.status === "PENDING" || element.status === "from lab") && element.locationFrom === "Lab") {
+                } else if ((element.status === "PENDING" || element.status === "from lab") && element.locationFrom === "Lab"  && "${enablePatientQueueSelection}".trim() === "true") {
+                    dataRowTable += "<i  style=\"font-size: 25px;\" class=\"icon-edit edit-action\" title=\"Edit Patient Encounter\" data-toggle=\"modal\" data-target=\"#pick_patient_queue_dialog\" data-id=\"\" data-patientqueueid='" + element.patientQueueId + "' data-url='" + encounterUrl + "'></i>";
+                }else if ((element.status === "PENDING" || element.status === "from lab") && element.locationFrom === "Lab"  && "${enablePatientQueueSelection}".trim() !== "true"){
                     dataRowTable += "<i  style=\"font-size: 25px;\" class=\"icon-edit edit-action\" title=\"Edit Patient Encounter\" onclick=\"location.href = '" + encounterUrl + "'\"></i>";
                 }
 
@@ -161,7 +177,7 @@
                 } else if (element.status === "PENDING" && element.locationFrom !== "Lab") {
                     stillInQueue += 1;
                     stillInQueueDataRows += dataRowTable;
-                } else if (element.status === "COMPLETED" && element.locationFrom !== "Lab"){
+                } else if (element.status === "COMPLETED" && element.locationFrom !== "Lab") {
                     completedQueue += 1;
                     completedDataRows += dataRowTable;
                 }
@@ -206,8 +222,9 @@
                     </div>
 
                     <div style="text-align: center">
-                        <h4>${currentProvider?.personName?.fullName}</h4>
+                        <h4>${currentProvider?.person?.personName?.fullName}</h4>
                     </div>
+
                     <div class="vertical"></div>
                 </div>
 
@@ -270,4 +287,5 @@
     </div>
 </div>
 ${ui.includeFragment("ugandaemrpoc", "addPatientToAnotherQueue")}
+${ui.includeFragment("ugandaemrpoc", "pickPatientFromQueue", [provider: currentProvider, currentLocation: currentLocation])}
 <% } %>
