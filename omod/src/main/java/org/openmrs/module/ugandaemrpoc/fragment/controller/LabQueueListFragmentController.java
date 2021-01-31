@@ -107,7 +107,7 @@ public class LabQueueListFragmentController {
         testOrder.setSpecimenSource(Context.getConceptService().getConcept(specimenSourceId));
         orderService.saveOrder(testOrder, null);
 
-        if (unProcessedOrders <= 1) {
+        if (unProcessedOrders.equals(1)) {
             patientQueueingService.completePatientQueue(patientQueueingService.getPatientQueueById(patientQueueId));
         }
     }
