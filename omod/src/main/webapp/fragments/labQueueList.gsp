@@ -120,7 +120,9 @@
                     sampleId: jq("#sample_id").val().trim().toLowerCase(),
                     referTest: jq("#refer_test").val().trim().toLowerCase(),
                     referenceLab: jq("#reference_lab").val().trim().toLowerCase(),
-                    specimenSourceId: jq("#specimen_source_id").val().trim().toLowerCase()
+                    specimenSourceId: jq("#specimen_source_id").val().trim().toLowerCase(),
+                    patientQueueId: jq("#patient-queue-id").val().trim().toLowerCase(),
+                    unProcessedOrders: jq("#unprocessed-orders").val().trim().toLowerCase()
                 }, function (response) {
                     if (!response) {
                         ${ ui.message("coreapps.none ") }
@@ -131,8 +133,12 @@
             jq('#add-order-to-lab-worklist-dialog').on('show.bs.modal', function (event) {
                 var button = jq(event.relatedTarget);
                 var orderNumber = button.data('order-number');
+                var patientQueueId = button.data('patientqueueid');
+                var unProcessed = button.data('unprocessed-orders');
                 var modal = jq(this)
                 modal.find("#order_id").val(orderNumber);
+                modal.find("#patient-queue-id").val(patientQueueId);
+                modal.find("#unprocessed-orders").val(unProcessed);
                 modal.find("#sample_id").val("");
                 modal.find("#sample_generator").html("");
                 modal.find("#sample_generator").append("<a onclick=\"generateSampleId('" + orderNumber + "')\"><i class=\" icon-barcode\">Generate Sample Id</i></a>");
@@ -257,7 +263,7 @@
                 orderedTestsRows += "<tr>";
                 orderedTestsRows += "<td>" + element.conceptName + "</td>";
                 orderedTestsRows += "<td>";
-                orderedTestsRows += "<a  data-toggle=\"modal\" data-target=\"#add-order-to-lab-worklist-dialog\" data-order-number=\"orderNumber\" data-order-id=\"orderId\"><i style=\"font-size: 25px;\" class=\"icon-share\" title=\"Check In\"></i></a>".replace("orderNumber", element.orderNumber).replace("orderId", element.orderId);
+                orderedTestsRows += "<a  data-toggle=\"modal\" data-target=\"#add-order-to-lab-worklist-dialog\" data-order-number=\"orderNumber\" data-order-id=\"orderId\" data-unprocessed-orders=\"unProcessedOrders\" data-patientqueueid=\"patientQueueId\"><i style=\"font-size: 25px;\" class=\"icon-share\" title=\"Check In\"></i></a>".replace("orderNumber", element.orderNumber).replace("orderId", element.orderId).replace("unProcessedOrders",labQueueList.orderMapper.length).replace("patientQueueId",labQueueList.patientQueueId);
                 orderedTestsRows += "</td>";
                 orderedTestsRows += "</tr>";
             }

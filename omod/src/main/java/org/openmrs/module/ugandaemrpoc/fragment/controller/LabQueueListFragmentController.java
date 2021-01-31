@@ -84,9 +84,11 @@ public class LabQueueListFragmentController {
      * @param referenceLab
      * @return
      */
-    public void scheduleTest(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "sampleId") String sampleId, @RequestParam(value = "specimenSourceId", required = false) String specimenSourceId, @RequestParam(value = "referenceLab", required = false) String referenceLab) {
+    public void scheduleTest(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "sampleId") String sampleId, @RequestParam(value = "specimenSourceId", required = false) String specimenSourceId, @RequestParam(value = "referenceLab", required = false) String referenceLab, @RequestParam(value = "unProcessedOrders", required = false) Integer unProcessedOrders, @RequestParam(value = "patientQueueId", required = false) Integer patientQueueId) {
         OrderService orderService = Context.getOrderService();
         Order order = orderService.getOrderByOrderNumber(orderNumber);
+
+        PatientQueueingService patientQueueingService = Context.getService(PatientQueueingService.class);
 
         TestOrder testOrder = new TestOrder();
         testOrder.setAccessionNumber(sampleId);
@@ -104,6 +106,10 @@ public class LabQueueListFragmentController {
         testOrder.setAction(Order.Action.REVISE);
         testOrder.setSpecimenSource(Context.getConceptService().getConcept(specimenSourceId));
         orderService.saveOrder(testOrder, null);
+
+        if (unProcessedOrders >= 1) {
+            patientQueueingService.completePatientQueue(patientQueueingService.getPatientQueueById(patientQueueId));
+        }
     }
 
     /**
@@ -281,7 +287,7 @@ public class LabQueueListFragmentController {
             ugandaEMRPOCService.completePreviousQueue(encounter.getPatient(), encounter.getLocation(), PatientQueue.Status.PENDING);
         }
 
-        List<PatientQueue> patientQueueList = patientQueueingService.getPatientQueueList(null, OpenmrsUtil.firstSecondOfDay(new Date()), OpenmrsUtil.getLastMomentOfDay(new Date()), null, null, encounter.getPatient(),null);
+        List<PatientQueue> patientQueueList = patientQueueingService.getPatientQueueList(null, OpenmrsUtil.firstSecondOfDay(new Date()), OpenmrsUtil.getLastMomentOfDay(new Date()), null, null, encounter.getPatient(), null);
 
         List<PatientQueue> fromLabQueue = new ArrayList<>();
 

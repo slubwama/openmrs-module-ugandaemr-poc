@@ -155,7 +155,7 @@
 
 
 
-                if ("${enablePatientQueueSelection}".trim() === "true") {
+                if ("${enablePatientQueueSelection}".trim() === "true"  && element.status!=="COMPLETED") {
                     dataRowTable += "<i  style=\"font-size: 25px;\" class=\"icon-dashboard view-action\" title=\"Capture Vitals\" data-toggle=\"modal\" data-target=\"#pick_patient_queue_dialog\" data-id=\"\" data-patientqueueid='" + element.patientQueueId + "' data-url='" + urlToPatientDashBoard + "'></i>";
                 } else {
                     dataRowTable += "<i style=\"font-size: 25px;\" class=\"icon-dashboard view-action\" title=\"Goto Patient's Dashboard\" onclick=\"location.href = '" + urlToPatientDashBoard + "'\"></i>";
