@@ -101,7 +101,7 @@
 
                 var action = "";
 
-                if ("${enablePatientQueueSelection}".trim() === "true") {
+                if ("${enablePatientQueueSelection}".trim() === "true" && patientQueueListElement.status!=="COMPLETED") {
                     action += "<i  style=\"font-size: 25px;\" class=\"icon-edit edit-action\" title=\"Capture Vitals\" data-toggle=\"modal\" data-target=\"#pick_patient_queue_dialog\" data-id=\"\" data-patientqueueid='" + element.patientQueueId + "' data-url='" + vitalsPageLocation + "'></i>";
                 } else {
                     action += "<i style=\"font-size: 25px;\" class=\"icon-edit edit-action\" title=\"Capture Vitals\" onclick=\" location.href = '" + vitalsPageLocation + "'\"></i>";

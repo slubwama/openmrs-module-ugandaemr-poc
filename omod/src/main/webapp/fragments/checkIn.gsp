@@ -72,33 +72,9 @@ hr.printhr {
             <div class="modal-body">
                 <div class="container">
                     <input type="hidden" id="patient_id" name="patient_id" value="">
-
-                    <div class="row">
-                        <div class="col-4">Entry Point:</div>
-
-                        <div class="col-8">
-                            <div class="form-group">
-                                <select class="form-control" id="location_from_id" name="location_from_id">
-                                    <option value="">Select Entry Point</option>
-                                    <% if (locationList != null) {
-                                        locationList.each { %>
-                                    <option value="${it.uuid}">${it.name}</option>
-                                    <%
-                                            }
-                                        }
-                                    %>
-                                </select>
-                                <span class="field-error" style="display: none;"></span>
-                                <% if (locationList == null) { %>
-                                <div><${ui.message("patientqueueing.select.error")}</div>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
-
+                    <input type="hidden" id="location_from_id" name="location_from_id" value="4501e132-07a2-4201-9dc8-2f6769b6d412">
                     <div class="row">
                         <div class="col-5">Next Service Point:</div>
-
                         <div class="col-7">
                             <div class="form-group">
                                 <select class="form-control" id="location_id" name="location_id">

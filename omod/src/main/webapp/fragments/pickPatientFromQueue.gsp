@@ -2,6 +2,7 @@
     var patientQueueId = "";
     var provider = "${config?.provider?.uuid}";
     var currentLocationUUID = "${config?.currentLocation?.uuid}";
+
     var serverResponse;
     if (jQuery) {
         jq(document).ready(function () {
@@ -20,10 +21,26 @@
         });
     }
 
+    function getCurrentDateTime() {
+        jq.ajax({
+            type: "GET",
+            url: "${ ui.actionLink("getCurrentDateTime") }",
+            async: false,
+            success: function (data) {
+                var responseData = JSON.parse(data.replace("currentDateTime=", "\"currentDateTime\":").trim());
+                currentDateTime = responseData.currentDateTime;
+
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
     function pickPatient() {
         var queueRoomToPost = null;
         var providerToPost = null;
-        var datePicked = new Date().toISOString().slice(0, 19).replace("T", " ");
+        var datePicked = "";
         var queueRoom = jq("#queue_room_location").val();
         patientQueueId = jq("#patientQueueId").val();
 
@@ -35,6 +52,20 @@
         if (queueRoomToPost !== null || queueRoom !== "") {
             queueRoomToPost = "{\"uuid\":\"" + queueRoom + "\"}";
         }
+
+        jq.ajax({
+            type: "GET",
+            url: "${ ui.actionLink("getCurrentDateTime") }",
+            async: false,
+            success: function (data) {
+                var responseData = JSON.parse(data.replace("currentDateTime=", "\"currentDateTime\":").trim());
+                datePicked = responseData.currentDateTime;
+
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
 
 
         var dataToPost = "{\"status\": \"PICKED\", \"datePicked\": \"" + datePicked + "\", \"queueRoom\":" + queueRoomToPost + ",\"provider\":" + providerToPost + "}";
